@@ -2,6 +2,7 @@ import React from 'react';
 import Header from "./Header";
 import Sidebar from './Sidebar';
 import Chat from './Chat';
+import { useContext } from 'react';
 
 const layoutStyle = {
     display: 'grid',
