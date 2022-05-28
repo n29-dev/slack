@@ -16,7 +16,8 @@ export default function AuthProvider ({children}){
 
     const [user, setUser] = useState({})
     const [loading, setLoading] = useState(true);
-    const [currentChannel, setCurrentChannel] = useState(null)
+    const [currentChannel, setCurrentChannel] = useState(null);
+    const [channels, setChannels] = useState([]);
 
     //signup function 
     async function signIn() {
@@ -63,7 +64,8 @@ export default function AuthProvider ({children}){
         <AuthContext.Provider value={{
             user,
             loading,
-            channels: {},
+            channels,
+            setChannels,
             currentChannel,
             setCurrentChannel,
             signIn,

@@ -6,9 +6,10 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useAuth } from "../Contexts/AuthContext";
 
 export default function ChannelModal({ close }) {
-  //////////////////////
-  const { setCurrentChannel } = useAuth();
 
+  const { setCurrentChannel } = useAuth();
+  
+/// add new channel to database
   function addChannel(event) {
 
     if (event.target.channelName) {
@@ -18,20 +19,26 @@ export default function ChannelModal({ close }) {
       const colRef = collection(db, "channels");
 
       async function addChannel() {
-        const docRef = await addDoc(colRef, {
-          name: event.target.channelName.value,
-          description: event.target.channelDescription.value,
-          messages: [],
-        });
 
-        setCurrentChannel(docRef.id);
+        try{
+          const docRef = await addDoc(colRef, {
+            name: event.target.channelName.value,
+            description: event.target.channelDescription.value,
+            messages: [],
+          });
+  
+          setCurrentChannel(docRef.id);
+        }
+        catch(error){
+          console.log(error.message)
+        }
+
       }
 
       addChannel();
     }
   }
 
-  /////////////////////////
 
   return (
     <div
