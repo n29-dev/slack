@@ -3,10 +3,12 @@ import {DotsVerticalIcon, PlusIcon} from '@heroicons/react/outline';
 import classes from '../../styles/Dropdown.module.css'
 import DropdownItem from './DropdownItem';
 import { HashtagIcon, ChevronLeftIcon } from '@heroicons/react/outline';
+import ChannelModal from './ChannelModal';
 
-export default function DropdownOptions({text}) {
+export default function DropdownOptions({text, addChannelOnly}) {
 
   const [open, setOpen] = useState(false);
+  const [modal, setModal] = useState(false);
   const iconRef = useRef(null);
   const dropDownIconRef = useRef(null);
 
@@ -55,11 +57,16 @@ export default function DropdownOptions({text}) {
             {<ChevronLeftIcon className={`w-5 mr-3 hover:text-white transition-all duration-100`} ref={dropDownIconRef}/>} {text}
           </span>
           
-          <span className={` inline-flex items-center transition-all duration-100 ${classes.hidden}`} ref={iconRef}>
+          <span className={`inline-flex items-center transition-all duration-100 ${classes.hidden}`} ref={iconRef}>
             <DotsVerticalIcon className='w-5 mr-3 hover:text-white'/>
-            <PlusIcon className='w-5 mr-3 hover:text-white'/>
+            <PlusIcon 
+            className='w-5 mr-3 hover:text-white'
+            onClick={() => { addChannelOnly && setModal(!modal) }}
+            />
           </span>
       </button>
+
+      {modal && <ChannelModal close={() => {setModal(!modal)}}/>}
 
       {open && (
         <ul className='flex flex-col pt-[px] pl-[35px] pr-[20px] pb-[10px]'>

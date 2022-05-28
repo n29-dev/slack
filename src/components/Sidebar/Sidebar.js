@@ -27,7 +27,7 @@ export default function Sidebar() {
                 <SidebarOption icon={<DocumentSearchIcon className='w-5 mr-3'/>} text={'File Browser'}/>
             </div>
             <div className="mt-5">
-                <DropdownOptions icon={<ChevronDownIcon className='w-5 mr-3 hover:text-white'/>} text={'Channels'}/>
+                <DropdownOptions icon={<ChevronDownIcon className='w-5 mr-3 hover:text-white'/>} text={'Channels'} addChannelOnly={true}/>
                 <DropdownOptions icon={<ChevronDownIcon className='w-5 mr-3 hover:text-white'/>} text={'Direct messages'}/>
                 <DropdownOptions icon={<ChevronDownIcon className='w-5 mr-3 hover:text-white'/>} text={'Apps'}/>
             </div>
