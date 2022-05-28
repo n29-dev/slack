@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {DotsVerticalIcon, PlusIcon} from '@heroicons/react/outline';
-import classes from '../styles/Dropdown.module.css';
+import classes from '../../styles/Dropdown.module.css'
 import DropdownItem from './DropdownItem';
 import { HashtagIcon, ChevronLeftIcon } from '@heroicons/react/outline';
 

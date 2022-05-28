@@ -1,23 +1,20 @@
 import React from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import AuthProvider, {useAuth} from './components/AuthContext';
-import Home from './components/Home';
-import PrivateRoute from './PrivateRoute'
+import AuthProvider from './components/Contexts/AuthContext';
+import Main from './components/Main';
+import PrivateRoute from './components/Login/PrivateRoute'
 
 
 function App() {
   
-  const {user} = useAuth()
-
   return (
-  <AuthProvider>
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<PrivateRoute component={<Home/>} user={user}/>}/>
-      </Routes>
-    </BrowserRouter>
-  </AuthProvider>
-  
+      <AuthProvider>
+        <Routes>
+          <Route path='/' element={<PrivateRoute component={<Main/>}/>}/>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>  
   );
 }
 

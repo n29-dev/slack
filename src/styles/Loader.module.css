@@ -1,0 +1,14 @@
+@keyframes loading {
+    0%{
+        background-color: hsl(200, 20%, 70%);
+    }
+    100%{
+        background-color: hsl(200, 20%, 100%);
+    }
+}
+.loader{
+
+    animation: loading 1s linear infinite alternate;
+    width: 100vw;
+    height: 100vh
+}

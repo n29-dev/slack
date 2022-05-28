@@ -1,8 +1,7 @@
 import React from 'react';
-import Header from "./Header";
-import Sidebar from './Sidebar';
-import Chat from './Chat';
-import { useContext } from 'react';
+import Header from './Header/Header';
+import Sidebar from './Sidebar/Sidebar';
+import Chat from './Chat/Chat';
 
 const layoutStyle = {
     display: 'grid',
@@ -13,7 +12,7 @@ const layoutStyle = {
     gridTemplateColumns: '1fr 4fr'
 }
 
-export default function Home() {
+export default function Main() {
   return (
       <div className='overflow-hidden' style={layoutStyle}>
           <Header></Header>
