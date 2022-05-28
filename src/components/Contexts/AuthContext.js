@@ -16,7 +16,8 @@ export default function AuthProvider ({children}){
 
     const [user, setUser] = useState({})
     const [loading, setLoading] = useState(true);
-    
+    const [currentChannel, setCurrentChannel] = useState(null)
+
     //signup function 
     async function signIn() {
 
@@ -44,6 +45,8 @@ export default function AuthProvider ({children}){
         }
     }
 
+    // currentChannelModifier
+
 
     useEffect(() => {
         const unsubs = onAuthStateChanged(auth, (user) => {
@@ -61,7 +64,9 @@ export default function AuthProvider ({children}){
             user,
             loading,
             channels: {},
-            signIn: signIn,
+            currentChannel,
+            setCurrentChannel,
+            signIn,
             logOut: signOut
         }}>
 

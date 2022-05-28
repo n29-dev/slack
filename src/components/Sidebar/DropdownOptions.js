@@ -12,6 +12,7 @@ export default function DropdownOptions({text, addChannelOnly}) {
   const iconRef = useRef(null);
   const dropDownIconRef = useRef(null);
 
+  //toggle icons between hovers
   function toggleIcon() {
     const icons = iconRef?.current;
 
@@ -26,7 +27,7 @@ export default function DropdownOptions({text, addChannelOnly}) {
     }
   }
 
-
+  //toggle dropdown elements 
   function toggleDropDown(){
 
     const dropdownIcon = dropDownIconRef.current;
@@ -43,7 +44,6 @@ export default function DropdownOptions({text, addChannelOnly}) {
       setOpen(!open)
     }
   }
-
 
   return (
     <>
@@ -70,6 +70,7 @@ export default function DropdownOptions({text, addChannelOnly}) {
 
       {open && (
         <ul className='flex flex-col pt-[px] pl-[35px] pr-[20px] pb-[10px]'>
+          
           <DropdownItem icon={<HashtagIcon className='w-5 mr-3 hover:text-white'/>} text={'funny'}/>
           <DropdownItem icon={<HashtagIcon className='w-5 mr-3 hover:text-white'/>} text={'serious'}/>
           <DropdownItem icon={<HashtagIcon className='w-5 mr-3 hover:text-white'/>} text={'oifolio theme'}/>
