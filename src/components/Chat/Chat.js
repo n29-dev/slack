@@ -2,12 +2,15 @@ import React from "react";
 import Message from "./Message";
 import { LockOpenIcon, QuestionMarkCircleIcon } from "@heroicons/react/outline";
 import MessageBox from "./MessageBox";
+import { useParams } from "react-router-dom";
 
 const layoutStyle = {
   gridArea: "chat",
 };
 
 export default function Chat() {
+  const { id } = useParams();
+  console.log(id);
   return (
     <div className="p-[30] relative" style={layoutStyle}>
       <div className="absolute top-0 left-0 righ-0 w-full py-2 pl-3 pr-5 border-b-[1px] border-gray-300 flex justify-between items-center">
