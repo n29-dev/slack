@@ -1,0 +1,190 @@
+[1mdiff --git a/src/components/Chat/Chat.js b/src/components/Chat/Chat.js[m
+[1mindex 46933bf..54f98f9 100644[m
+[1m--- a/src/components/Chat/Chat.js[m
+[1m+++ b/src/components/Chat/Chat.js[m
+[36m@@ -1,10 +1,11 @@[m
+[31m-import React from "react";[m
+[32m+[m[32mimport React, { useEffect, useState, useRef } from "react";[m
+ import Message from "./Message";[m
+ import { LockOpenIcon, QuestionMarkCircleIcon } from "@heroicons/react/outline";[m
+ import MessageBox from "./MessageBox";[m
+ import { useParams } from "react-router-dom";[m
+ import { useAuth } from "../Contexts/AuthContext";[m
+[31m-import _ from "lodash";[m
+[32m+[m[32mimport app from "../../firebase";[m
+[32m+[m[32mimport { getFirestore, doc, onSnapshot, updateDoc } from "firebase/firestore";[m
+ [m
+ const layoutStyle = {[m
+   gridArea: "chat",[m
+[36m@@ -12,10 +13,23 @@[m [mconst layoutStyle = {[m
+ [m
+ export default function Chat() {[m
+   const { id } = useParams();[m
+[31m-  const { channels, setChannels, user } = useAuth();[m
+[32m+[m[32m  const { user } = useAuth();[m
+[32m+[m[32m  const [currentChannel, setCurrentChannel] = useState({});[m
+[32m+[m[32m  const [loading, setLoading] = useState(true);[m
+[32m+[m[32m  const db = getFirestore(app);[m
+[32m+[m[32m  const docRef = doc(db, "channels", id);[m
+[32m+[m[32m  const boxRef = useRef();[m
+[32m+[m[32m  //realtime listener[m
+ [m
+[31m-  const mutableData = _.cloneDeep(channels);[m
+[31m-  const currentChannel = mutableData.find((channel) => channel.id === id);[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    const unsubscribe = onSnapshot(docRef, (snapshot) => {[m
+[32m+[m[32m      setCurrentChannel({ ...snapshot.data() });[m
+[32m+[m[32m      setLoading(false);[m
+[32m+[m[32m    });[m
+[32m+[m[32m    return unsubscribe;[m
+[32m+[m[32m  }, [id]);[m
+[32m+[m
+[32m+[m[32m  boxRef.current.scrollTop = boxRef.current.scrollHeight + 150;[m
+ [m
+   // add message[m
+   function addMessage(e) {[m
+[36m@@ -28,19 +42,27 @@[m [mexport default function Chat() {[m
+         messageBody: e.target.message.value,[m
+         created: "" + Date.now(),[m
+       };[m
+[31m-      currentChannel.messages.push(message);[m
+       e.target.message.value = "";[m
+       e.target.message.blur();[m
+[31m-      setChannels(mutableData);[m
+[32m+[m
+[32m+[m[32m      // send data to firestore[m
+[32m+[m
+[32m+[m[32m      function setMessage() {[m
+[32m+[m[32m        setLoading(true);[m
+[32m+[m[32m        updateDoc(docRef, { messages: [...currentChannel.messages, message] });[m
+[32m+[m[32m      }[m
+[32m+[m
+[32m+[m[32m      setMessage();[m
+     }[m
+   }[m
+ [m
+[31m-  console.log(user);[m
+[32m+[m[32m  // scroll to bottom[m
+ [m
+   return ([m
+     <div[m
+       className="p-[30] relative overflow-y-scroll pb-[150px]"[m
+       style={layoutStyle}[m
+[32m+[m[32m      ref={boxRef}[m
+     >[m
+       <div className="absolute top-0 left-0 righ-0 w-full py-2 pl-3 pr-5 border-b-[1px] border-gray-300 flex justify-between items-center">[m
+         <h3 className="text-xl font-semibold flex gap-2">[m
+[36m@@ -53,9 +75,10 @@[m [mexport default function Chat() {[m
+       </div>[m
+       <div className="mt-[70px] px-[10px]">[m
+         {currentChannel?.messages?.length > 0[m
+[31m-          ? currentChannel.messages.map((message) => {[m
+[32m+[m[32m          ? currentChannel.messages.map((message, index) => {[m
+               return ([m
+                 <Message[m
+[32m+[m[32m                  key={Math.random() + index}[m
+                   username={message.username}[m
+                   userImg={message.userImage}[m
+                   timestamp={message.created}[m
+[1mdiff --git a/src/components/Sidebar/ChannelModal.js b/src/components/Sidebar/ChannelModal.js[m
+[1mindex d5d31e4..6a53c73 100644[m
+[1m--- a/src/components/Sidebar/ChannelModal.js[m
+[1m+++ b/src/components/Sidebar/ChannelModal.js[m
+[36m@@ -4,47 +4,53 @@[m [mimport { XIcon } from "@heroicons/react/outline";[m
+ import app from "../../firebase";[m
+ import { getFirestore, collection, addDoc } from "firebase/firestore";[m
+ import { useAuth } from "../Contexts/AuthContext";[m
+[32m+[m[32mimport { useNavigate } from "react-router-dom";[m
+ [m
+[31m-export default function ChannelModal({ close }) {[m
+[31m-[m
+[32m+[m[32mexport default function ChannelModal({ close, updateChannels }) {[m
+   const { setCurrentChannel } = useAuth();[m
+[31m-  [m
+[31m-/// add new channel to database[m
+[31m-  function addChannel(event) {[m
+[32m+[m[32m  const navigate = useNavigate();[m
+ [m
+[32m+[m[32m  function navigateTo(id) {[m
+[32m+[m[32m    navigate(`/${id}`);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  /// add new channel to database[m
+[32m+[m[32m  function addChannel(event) {[m
+     if (event.target.channelName) {[m
+       event.preventDefault();[m
+ [m
+[31m-      const db = getFirestore(app);[m
+[31m-      const colRef = collection(db, "channels");[m
+[32m+[m[32m      if (event.target.channelName.value) {[m
+[32m+[m[32m        const db = getFirestore(app);[m
+[32m+[m[32m        const colRef = collection(db, "channels");[m
+ [m
+[31m-      async function addChannel() {[m
+[32m+[m[32m        async function addChannel() {[m
+[32m+[m[32m          try {[m
+[32m+[m[32m            const docRef = await addDoc(colRef, {[m
+[32m+[m[32m              name: event.target.channelName.value,[m
+[32m+[m[32m              description: event.target.channelDescription.value,[m
+[32m+[m[32m              messages: [],[m
+[32m+[m[32m            });[m
+ [m
+[31m-        try{[m
+[31m-          const docRef = await addDoc(colRef, {[m
+[31m-            name: event.target.channelName.value,[m
+[31m-            description: event.target.channelDescription.value,[m
+[31m-            messages: [],[m
+[31m-          });[m
+[31m-  [m
+[31m-          setCurrentChannel(docRef.id);[m
+[31m-        }[m
+[31m-        catch(error){[m
+[31m-          console.log(error.message)[m
+[32m+[m[32m            navigateTo(docRef.id);[m
+[32m+[m
+[32m+[m[32m            setCurrentChannel(docRef.id);[m
+[32m+[m[32m          } catch (error) {[m
+[32m+[m[32m            console.log(error.message);[m
+[32m+[m[32m          }[m
+         }[m
+ [m
+[32m+[m[32m        addChannel();[m
+[32m+[m[32m        close();[m
+[32m+[m[32m        updateChannels();[m
+       }[m
+[31m-[m
+[31m-      addChannel();[m
+     }[m
+   }[m
+ [m
+[31m-[m
+   return ([m
+     <div[m
+[31m-      className={`${classes.modalOuter} absolute top-0 bottom-0 left-0 right-0 grid place-items-center`}[m
+[32m+[m[32m      className={`${classes.modalOuter} absolute top-0 bottom-0 left-0 right-0 grid place-items-center z-10`}[m
+     >[m
+[31m-      <div className="modal-form bg-white rounded-2xl p-[25px] relative max-w-[500px]">[m
+[32m+[m[32m      <div className="modal-form bg-white rounded-2xl p-[25px] relative max-w-[500px] z-10">[m
+         <h3 className="text-3xl mb-[20px] font-semibold">Create a Channel</h3>[m
+         <button className="absolute right-[30px] top-[30px]">[m
+           <XIcon className="w-5" onClick={close} />[m
+[1mdiff --git a/src/components/Sidebar/DropdownOptions.js b/src/components/Sidebar/DropdownOptions.js[m
+[1mindex 51e9aa0..d0be873 100644[m
+[1m--- a/src/components/Sidebar/DropdownOptions.js[m
+[1m+++ b/src/components/Sidebar/DropdownOptions.js[m
+[36m@@ -105,6 +105,7 @@[m [mexport default function DropdownOptions({ text, addChannelOnly }) {[m
+           close={() => {[m
+             setModal(!modal);[m
+           }}[m
+[32m+[m[32m          updateChannels={getChannels}[m
+         />[m
+       )}[m
+ [m
+[1mdiff --git a/src/components/Sidebar/Sidebar.js b/src/components/Sidebar/Sidebar.js[m
+[1mindex c2514d8..147dc8c 100644[m
+[1m--- a/src/components/Sidebar/Sidebar.js[m
+[1m+++ b/src/components/Sidebar/Sidebar.js[m
+[36m@@ -1,37 +1,83 @@[m
+[31m-import React from 'react';[m
+[31m-import SidebarOption from './SidebarOption';[m
+[31m-import {PencilAltIcon, ChatAlt2Icon, AtSymbolIcon, Sa

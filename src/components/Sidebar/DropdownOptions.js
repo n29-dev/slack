@@ -105,6 +105,7 @@ export default function DropdownOptions({ text, addChannelOnly }) {
           close={() => {
             setModal(!modal);
           }}
+          updateChannels={getChannels}
         />
       )}
 

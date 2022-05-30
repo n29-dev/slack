@@ -4,47 +4,53 @@ import { XIcon } from "@heroicons/react/outline";
 import app from "../../firebase";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useAuth } from "../Contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function ChannelModal({ close }) {
-
+export default function ChannelModal({ close, updateChannels }) {
   const { setCurrentChannel } = useAuth();
-  
-/// add new channel to database
-  function addChannel(event) {
+  const navigate = useNavigate();
 
+  function navigateTo(id) {
+    navigate(`/${id}`);
+  }
+
+  /// add new channel to database
+  function addChannel(event) {
     if (event.target.channelName) {
       event.preventDefault();
 
-      const db = getFirestore(app);
-      const colRef = collection(db, "channels");
+      if (event.target.channelName.value) {
+        const db = getFirestore(app);
+        const colRef = collection(db, "channels");
 
-      async function addChannel() {
+        async function addChannel() {
+          try {
+            const docRef = await addDoc(colRef, {
+              name: event.target.channelName.value,
+              description: event.target.channelDescription.value,
+              messages: [],
+            });
 
-        try{
-          const docRef = await addDoc(colRef, {
-            name: event.target.channelName.value,
-            description: event.target.channelDescription.value,
-            messages: [],
-          });
-  
-          setCurrentChannel(docRef.id);
+            navigateTo(docRef.id);
+
+            setCurrentChannel(docRef.id);
+          } catch (error) {
+            console.log(error.message);
+          }
         }
-        catch(error){
-          console.log(error.message)
-        }
 
+        addChannel();
+        close();
+        updateChannels();
       }
-
-      addChannel();
     }
   }
 
-
   return (
     <div
-      className={`${classes.modalOuter} absolute top-0 bottom-0 left-0 right-0 grid place-items-center`}
+      className={`${classes.modalOuter} absolute top-0 bottom-0 left-0 right-0 grid place-items-center z-10`}
     >
-      <div className="modal-form bg-white rounded-2xl p-[25px] relative max-w-[500px]">
+      <div className="modal-form bg-white rounded-2xl p-[25px] relative max-w-[500px] z-10">
         <h3 className="text-3xl mb-[20px] font-semibold">Create a Channel</h3>
         <button className="absolute right-[30px] top-[30px]">
           <XIcon className="w-5" onClick={close} />
